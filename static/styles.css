@@ -1,0 +1,77 @@
+/* General Styling */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Menu */
+.top-menu {
+    background-color: #333;
+    color: white;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.top-menu h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.top-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.top-nav li {
+    margin-left: 1rem;
+}
+
+.top-nav a {
+    color: white;
+    text-decoration: none;
+}
+
+/* Layout */
+.layout {
+    display: flex;
+    height: 90vh;
+}
+
+.side-menu {
+    width: 20%;
+    background-color: #f4f4f4;
+    padding: 1rem;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.side-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.side-menu li {
+    margin-bottom: 1rem;
+}
+
+.side-menu a {
+    text-decoration: none;
+    color: #333;
+}
+
+.side-menu a:hover {
+    color: #007BFF;
+}
+
+.main-content {
+    width: 80%;
+    padding: 2rem;
+    overflow-y: auto;
+}

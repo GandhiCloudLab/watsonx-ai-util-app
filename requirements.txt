@@ -1,0 +1,10 @@
+pandas
+python-dotenv
+requests
+openpyxl
+flask
+flask-cors
+wget
+ibm_watson_machine_learning
+ibm_watsonx_ai
+ibm_cloud_sdk_core

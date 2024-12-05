@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Layout</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header class="top-menu">
+        <h1>watsonx.ai Utility Application</h1>
+        <nav class="top-nav">
+            <ul>
+                <li><a href="#" >Home</a></li>
+                <li> <a href="{{ url_for('api_main.about') }}">About</a> </li>
+                <li><a href="{{ url_for('api_main.contact') }}">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="layout">
+        <aside class="side-menu">
+            <ul>
+                <li><a href="#" data-page="home">Dashboard</a></li>
+                <li><a href="#" data-page="about">Services</a></li>
+                <li><a href="#" data-page="contact">Support</a></li>
+            </ul>
+        </aside>
+        <main class="main-content" id="main-content">
+            <h2>Welcome to the Home Page</h2>
+            <p>This is the main content area. Click on a menu to load content.</p>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
