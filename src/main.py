@@ -5,8 +5,9 @@ import os
 from flask_cors import CORS
 
 from dotenv import load_dotenv
-from api.ApiImageLlm import apiImageLlm
-from api.ApiTextLlm import apiTextLlm
+from api.ApiLlmDocling import apiLlmDocling
+from api.ApiLlmImage import apiLlmImage
+from api.ApiLlmText import apiLlmText
 from api.ApiMain import apiMain
 
 # Initialize Flask app
@@ -29,8 +30,9 @@ logger.setLevel(os.environ.get('LOGLEVEL', 'INFO').upper())
 
 ### APIs
 app.register_blueprint(apiMain)
-app.register_blueprint(apiImageLlm)
-app.register_blueprint(apiTextLlm)
+app.register_blueprint(apiLlmDocling)
+app.register_blueprint(apiLlmImage)
+app.register_blueprint(apiLlmText)
 
 ### Main method
 def main():

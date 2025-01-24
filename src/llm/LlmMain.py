@@ -6,14 +6,16 @@ import requests
 import wget
 from dotenv import load_dotenv
 import logging 
+import re
 
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watsonx_ai import Credentials
 from ibm_watsonx_ai.foundation_models.schema import TextChatParameters
 from ibm_watsonx_ai.foundation_models import ModelInference
 from ibm_cloud_sdk_core import IAMTokenManager
+from langchain_ibm import WatsonxLLM
+import time
 
-from util.DateUtils import DateUtils
 from util.FileUtil import FileUtil
 
 class LlmMain(object):
@@ -32,9 +34,12 @@ class LlmMain(object):
         self.WATSONX_CREDENTIALS_URL = os.getenv("WATSONX_CREDENTIALS_URL", "")
         self.WATSONX_API_URL = os.getenv("WATSONX_API_URL", "")
         self.WATSONX_API_KEY = os.getenv("WATSONX_API_KEY", "")
+        self.WATSONX_MODEL_ID_DOCLING = os.getenv("WATSONX_MODEL_ID_DOCLING", "")
         self.WATSONX_MODEL_ID_IMAGE = os.getenv("WATSONX_MODEL_ID_IMAGE", "")
         self.WATSONX_MODEL_ID_TEXT = os.getenv("WATSONX_MODEL_ID_TEXT", "")
         self.WATSONX_PROJECT_ID = os.getenv("WATSONX_PROJECT_ID", "")
+        self.fileUtil = FileUtil()
+        self.fileUtil.start()
 
     def get_watsonx_image_model(self):
         self.logger.info("get_watsonx_image_model Started ")
@@ -64,19 +69,8 @@ class LlmMain(object):
     def invokeWatsonx_image_model(self, model, file_url, prompt_text):
         self.logger.info("------------------------------------------------ invokeWatsonx_image_model Started ------------------------------------------------")
 
-        ### Extract file name from file_url
-        file_name = FileUtil.extractFilename(file_url)
-
-        ### Generate the name for the temporary local file
-        file_name_with_path = self.TEMP_FOLDER + "/" + file_name
-
-        self.logger.debug(f"file_url : {file_url} ")
-        self.logger.debug(f"file_name : {file_name} ")
-        self.logger.debug(f"file_name_with_path : {file_name_with_path} ")
-
-        ### Download file from the url
-        if not os.path.isfile(file_name_with_path):
-            wget.download(file_url, out=file_name_with_path)
+        ### download file
+        file_name_with_path = self.fileUtil.download_file(file_url)
 
         ### Create base64 file
         with open(file_name_with_path, 'rb') as image_file:
@@ -163,3 +157,48 @@ class LlmMain(object):
         self.logger.debug("------------------------------------------------ invokeWatsonx_Text_model Completed ------------------------------------------------")
 
         return result
+    
+
+    def get_watsonx_model_for_utility_bills_docling(self):
+        self.logger.info("------------------------------------------------ get_watsonx_model_for_utility_bills_docling Started ------------------------------------------------")
+        start_time = time.time()
+
+        llm = WatsonxLLM(
+            model_id = self.WATSONX_MODEL_ID_DOCLING,
+            apikey=self.WATSONX_API_KEY,
+            project_id=self.WATSONX_PROJECT_ID,
+            params={
+                "decoding_method": "greedy",
+                "max_new_tokens": 8000,
+                "min_new_tokens": 1,
+                "repetition_penalty": 1.01
+            },
+            url=self.WATSONX_CREDENTIALS_URL
+        )
+
+        end_time = time.time()
+        execution_time = end_time - start_time
+        self.logger.info(f"\nExecution time: get_watsonx_model_for_utility_bills : {execution_time} seconds")
+        self.logger.debug("------------------------------------------------ get_watsonx_model_for_utility_bills_docling Completed ------------------------------------------------\n\n\n")
+
+        return llm
+
+
+    def callWatsonx_for_utility_bills_docling(self, llm, prompt):
+        self.logger.info("------------------------------------------------ callWatsonx_for_utility_bills_docling Started ------------------------------------------------")
+        start_time = time.time()
+
+        answer = llm.invoke(prompt)
+
+        json_string = re.search(r'\{.*\}', answer, re.DOTALL).group(0).replace('\n', '')
+        json_data = json.loads(json_string)
+
+        ### Write it in output file
+        self.fileUtil.writeInFileWithCounter("json_converted.json", json_string)
+
+        end_time = time.time()
+        execution_time = end_time - start_time
+        self.logger.info(f"\nExecution time: callWatsonx_for_utility_bills_docling : {execution_time} seconds")
+        self.logger.debug("------------------------------------------------ callWatsonx_for_utility_bills_docling Completed ------------------------------------------------\n\n\n")
+
+        return json_data    

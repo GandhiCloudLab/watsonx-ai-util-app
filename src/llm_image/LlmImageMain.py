@@ -10,7 +10,7 @@ from llm.LlmMain import LlmMain
 
 from CommonConstants import *
 
-class ImageLlmMain(object):
+class LlmImageMain(object):
 
     def __init__(
         self

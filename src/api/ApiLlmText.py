@@ -1,26 +1,26 @@
 from flask import Blueprint, request
 import logging, os
 
-from text_llm.TextLlmMain import TextLlmMain
+from llm_text.LlmTextMain import LlmTextMain
 
-apiTextLlm = Blueprint('api_text_llm', __name__)
+apiLlmText = Blueprint('api_llm_text', __name__)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(os.environ.get('LOGLEVEL', 'INFO').upper())
 
-@apiTextLlm.route('/api/text/invoke', methods=['POST'])
-def text_invoke():
+@apiLlmText.route('/api/text/invoke', methods=['POST'])
+def invoke_text():
     logger.debug("/api/text/invoke ...")
 
     payload = request.get_json()
 
     ### Call the main function to get the response
-    textLlmMain = TextLlmMain()
-    resp = textLlmMain.invoke(payload)
+    llmTextMain = LlmTextMain()
+    resp = llmTextMain.invoke(payload)
 
     return resp, 200
 
-@apiTextLlm.route('/api/text/welcome', methods=['GET'])
-def text_welcome():
+@apiLlmText.route('/api/text/welcome', methods=['GET'])
+def welcome_text():
     resp = {"msg" : "Welcome to Text LLM APIs"}
     return resp, 200

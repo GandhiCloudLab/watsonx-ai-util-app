@@ -10,7 +10,7 @@ from llm.LlmMain import LlmMain
 
 from CommonConstants import *
 
-class TextLlmMain(object):
+class LlmTextMain(object):
 
     def __init__(
         self

@@ -1,10 +1,11 @@
 # watsonx.ai Utility Application
 
-This application helps to acccess the LLMs (text) and MutliModel LLMs (text and image) using the Watsonx.ai. 
+This application helps to acccess the LLMs (text), MutliModel LLMs (text and image) and IBM Docling (to process PDF) using the Watsonx.ai. 
 
 The application exposes the below two main APIs to call LMMs via Watsonx.ai.
-- http://localhost:3001/api/image/invoke
 - http://localhost:3001/api/text/invoke
+- http://localhost:3001/api/image/invoke
+- http://localhost:3001/api/docling/invoke
 
 If you have Watsonx.ai API Key, you can call those APIs. 
 
@@ -42,7 +43,7 @@ Python 3.x should be installed and available.
 
     ```
     python -m venv myvenv
-    source myvenv
+    source myvenv/bin/activate
     ```
 
 4. Install the required python packages by running the below command.
@@ -64,6 +65,7 @@ WATSONX_CREDENTIALS_URL = "https://us-south.ml.cloud.ibm.com"
 WATSONX_API_URL = "https://us-south.ml.cloud.ibm.com/ml/v1/text/generation?version=2023-05-29"
 WATSONX_API_KEY = "xxxxx"
 WATSONX_PROJECT_ID = "53302198-522e-49a6-ba45-b445d46db666"
+WATSONX_MODEL_ID_DOCLING = "ibm/granite-3-8b-instruct2"
 WATSONX_MODEL_ID_IMAGE = "meta-llama/llama-3-2-90b-vision-instruct"
 WATSONX_MODEL_ID_TEXT = "ibm/granite-3-8b-instruct"
 ```
@@ -84,7 +86,32 @@ WATSONX_MODEL_ID_TEXT = "ibm/granite-3-8b-instruct"
 
 ## 2 Using the API
 
-### 2.1 Invoke Image API 
+### 2.1 Invoke Text API 
+
+1. The Text API exposed by this application is http://localhost:3001/api/text/invoke
+
+2. You can post the below json into this API
+```
+{
+    "question" : "What is AI"
+}
+```
+
+3. Here is the sample Curl script.
+
+```
+curl --location 'http://localhost:3001/api/text/invoke' \
+--header 'Content-Type: application/json' \
+--data '{
+     "question" : "What is AI"
+}'
+```
+
+4. Here is the postman sample
+    <img src="images/image-11.png">
+
+
+### 2.2 Invoke Image API 
 
 1. The Image API exposed by this application is http://localhost:3001/api/image/invoke
 
@@ -113,33 +140,33 @@ curl --location 'http://localhost:3001/api/image/invoke' \
 
     <img src="images/image-11.png">
 
-    <img src="images/image-12.png">
 
+### 2.3 Invoke Docling API 
 
-
-### 2.2 Invoke Text API 
-
-1. The Text API exposed by this application is http://localhost:3001/api/text/invoke
+1. The Docling API exposed by this application is http://localhost:3001/api/docling/invoke
 
 2. You can post the below json into this API
 ```
 {
-    "question" : "What is AI"
+    "file_url" : "https://cloud-object-storage-cos-wxo.s3.jp-tok.cloud-object-storage.appdomain.cloud/AllActive_EW210379.jpg"
 }
 ```
+
+You can pass your image URL here along with your question about the image.
 
 3. Here is the sample Curl script.
 
 ```
-curl --location 'http://localhost:3001/api/text/invoke' \
+curl --location 'http://localhost:3001/api/docling/invoke' \
 --header 'Content-Type: application/json' \
 --data '{
-     "question" : "What is AI"
+    "file_url" : "https://cloud-object-storage-cos-wxo.s3.jp-tok.cloud-object-storage.appdomain.cloud/AllActive_EW210379.jpg"
 }'
 ```
 
 4. Here is the postman sample
-    <img src="images/image-12.png">
+
+    <img src="images/image-13.png">
 
 
 ## 3. Starting the App using Docker / Podman

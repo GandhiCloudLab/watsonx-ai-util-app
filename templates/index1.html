@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload and Data Display</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Using MultiModel LLM in watsonx.ai</h1>
+    </header>
+
+    <section class="intro">
+        <p>This tool allows you to ask any questions related to the given Image using the MultiModel LLM in watsonx.ai</p>
+    </section>
+
+    <main>
+        <section class="content-section">
+            <div class="title-section">
+                <h3>Upload Config Connector</h3>
+                <p>Upload your Config Connector template data to findout the latitude and longitude.</p>
+            </div>
+            <div class="upload-section">
+                <form id="uploadForm" action="{{ url_for('execute_main') }}" method="POST" enctype="multipart/form-data">
+                    <label for="fileUpload" >Choose your file :</label>
+                    <input type="file" id="fileUpload" name="uploadFile" accept=".xlsx"  class="btn-fileupload" required>
+                    <button type="button" class="btn-primary" onclick="processFileUpload()">Upload</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="title-section">
+                <h3>Result</h3>
+                <p>View and download the latitude and longitude filled data.</p>
+            </div>
+            <div class="result-section">
+                <a id="downloadLink" href="#" download>
+                    <button id="downloadButton" disabled class="btn-primary">Download file</button>
+                </a>
+
+                <div id="resultMessage" class="message-section">
+                    <!-- Data will be dynamically inserted here -->
+                </div>
+
+                <div id="resultData" class="data-section">
+                        <!-- Data will be dynamically inserted here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+
+    <script>
+        // Get the form element
+        const form = document.getElementById('uploadForm');
+        const fileInput = document.getElementById('fileUpload');
+        const resultMessageDiv = document.getElementById('resultMessage');
+        const resultDataDiv = document.getElementById('resultData');
+
+        const downloadLink = document.getElementById('downloadLink');
+        const downloadButton = document.getElementById('downloadButton');
+
+        // Auto-submit the form when a file is selected
+        function processFileUpload() {
+            const formData = new FormData(form);
+
+            //Clear results
+            resultMessageDiv.innerHTML = "";
+            resultDataDiv.innerHTML = "";
+
+            // Send the form data using Fetch API
+            fetch("{{ url_for('execute_main') }}", {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())  // Assuming the response is JSON
+                .then(data => {
+
+                    // Display  results
+                    resultMessageDiv.innerHTML = `<p style="color: green;"">${data.message}</p>`;
+                    resultDataDiv.innerHTML = `${data.table_data}`;
+
+                    // Update the download link with the file path
+                    downloadLink.href = `/download?file_path=${encodeURIComponent(data.file_name)}`;
+
+                    // Enable the download button
+                    downloadButton.disabled = false;
+
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    resultMessageDiv.innerHTML = `<p style="color: red;">Error occurred while uploading file.</p>`;
+                });
+            }
+    </script>
+</body>
+</html>
